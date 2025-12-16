@@ -13,9 +13,14 @@ fn main() {
                 println!("accepted new connection");
 
                 let mut buffer = [0; 512];
-                stream.read(&mut buffer).unwrap();
-                println!("request: {}", String::from_utf8_lossy(&buffer[..]));
-                stream.write_all(b"+PONG\r\n").unwrap();
+                loop {
+                    let n = stream.read(&mut buffer).unwrap();
+                    if n == 0 {
+                        break;
+                    }  
+                    println!("request: {}", String::from_utf8_lossy(&buffer[..]));
+                    stream.write_all(b"+PONG\r\n").unwrap();
+                }
             }
             Err(e) => {
                 println!("error: {}", e);
